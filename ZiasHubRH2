@@ -28,19 +28,62 @@ section1:button({name = "InfStamina",callback = function()
      end)
 end})
 
-section1:button({name = "button",callback = function()
+section1:button({name = "BallMag",callback = function()
+    local ballMagnet = script.Parent
+local magnetRange = 20
+
+local function isBall(part)
+    return part:IsA("BasePart") and part.Name == "Ball"
+end
+
+local function attractBall()
+    local player = game.Players.LocalPlayer
+    local character = player.Character
+    local humanoidRootPart = character and character:FindFirstChild("HumanoidRootPart")
+
+    if not humanoidRootPart then
+        return
+    end
+
+    while humanoidRootPart:IsDescendantOf(workspace) do
+        local ballsFolder = workspace:FindFirstChild("Balls")
+
+        if ballsFolder then
+            for _, ball in ipairs(ballsFolder:GetChildren()) do
+                if isBall(ball) and (ball.Position - humanoidRootPart.Position).Magnitude <= magnetRange then
+                    local direction = (humanoidRootPart.Position - ball.Position).Unit
+                    ball.Velocity = direction * 50
+                end
+            end
+        end
+
+        wait()
+    end
+end
+
+attractBall()
+ end})
+
+ section1:button({name = "button",callback = function()
     print('hot ui lib')
  end})
- 
 
-section1:slider({name = "rate ui lib 1-100",def = 1, max = 100,min = 1,rounding = true,ticking = false,measuring = "",callback = function(value)
-   print(value)
-end})
+section1:slider({
+    name = "WalkSpeed",
+    def = 1,
+    max = 15,
+    min = 1,
+    rounding = true,
+    ticking = false,
+    measuring = "",
+    callback = function(ws)
+game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = ws
+    end
+})
 
 section1:dropdown({name = "dropdown",def = "",max = 10,options = {"1","2","3","4","5","6","7","8","9","10"},callback = function(chosen)
    print(chosen)
 end})
--- for dropdowns put max to the number of items u have in the opions
 
 section1:buttonbox({name = "buttonbox",def = "",max = 4, options = {"yoyoyo","yo2","yo3","yo4"},callback = function(value)
    print(value)
