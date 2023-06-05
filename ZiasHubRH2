@@ -1,35 +1,98 @@
-local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/Splix"))()
+local Mercury = loadstring(game:HttpGet("https://raw.githubusercontent.com/deeeity/mercury-lib/master/src.lua"))()
 
-local window = library:new({textsize = 13.5,font = Enum.Font.RobotoMono,name = "ZiasHub",color = Color3.fromRGB(225,58,81)})
+local GUI = Mercury:Create{
+   Name = "ZiasHub",
+   Size = UDim2.fromOffset(600, 400),
+   Theme = Mercury.Themes.Dark,
+   Link = "https://github.com/deeeity/mercury-lib"
+}
 
-local tab = window:page({name = "Main"})
+local Tab = GUI:Tab{
+    Name = "Main",
+    Icon = "rbxassetid://8569322835"
+}
 
-local tab = window:page({name = "Defense"})
+Tab:Button({
+    Name = "All Meter Aimbot",
+    Description = 'Hold "E" while in Range',
+    Callback = function()
+        
+        local UserInputService = game:GetService("UserInputService")
+        local Players = game:GetService("Players")
+        local player = Players.LocalPlayer
+        local bar = player.Backpack.ActionValues.Power
 
-local section1 = tab:section({name = "section1",side = "left",size = 250})
+        local initialPower = bar.Value
+        local executed = false -- Flag variable to track execution
 
-local multisection = tab:multisection({name = "multisection",side = "right",size = 250})
+        local function onKeyPress(input)
+            if input.KeyCode == Enum.KeyCode.E then
+                if not executed and bar.Value >= _G.valshoot then
+                    executed = true -- Set the flag to true to prevent further execution
+                    Players.LocalPlayer.Backpack.PlayerEvents.Shooting:FireServer(false, "Shooting", "Standing Shot")
+                    print("Shot released")
+                    wait(3)
+                    executed = false
+                end
+            end
+        end
 
-local section2 = multisection:section({name = "section2",side = "right",size = 100})
+        UserInputService.InputBegan:Connect(onKeyPress)
 
-section1:toggle({name = "toggle",def = false,callback = function(value)
-  tog = value
-  print(tog)
-end})
+        bar:GetPropertyChangedSignal("Value"):Connect(function()
+            if not executed and bar.Value >= _G.valshoot and UserInputService:IsKeyDown(Enum.KeyCode.E) then
+                executed = true -- Set the flag to true to prevent further execution
+                Players.LocalPlayer.Backpack.PlayerEvents.Shooting:FireServer(false, "Shooting", "Standing Shot")
+                print("Shot released")
+                wait(3)
+                executed = false
+            end
+        end)
+    end,
+})
 
-section1:button({name = "InfStamina",callback = function()
-    local stam = game:GetService("Players").LocalPlayer.Backpack.ActionValues.Stamina
-    local stamhook;
-    stamhook = hookmetamethod(game, "__index", function(self, v)
-     if self == stam and v == "Value" then
-         return math.huge
-     end
-         return stamhook(self, v)
-     end)
-end})
+Tab:Slider{
+    Name = "All Meter Aimbot Configuration",
+    Description = "Make sure you adjust this before using the aimbot.",
+    Max = 70,
+    Min = 56,
+    Default = 63,
+    Callback = function(valuecall)
+        _G.valshoot = valuecall
+    end,
+}
 
-section1:button({name = "BallMag",callback = function()
-    local ballMagnet = script.Parent
+local Tab = GUI:Tab{
+	Name = "Character",
+	Icon = "rbxassetid://8569322835"
+}
+
+
+Tab:Slider{
+	Name = "WalkSpeed",
+	Default = 10,
+	Min = 1,
+	Max = 16,
+	rounding = true,
+   ticking = false,
+   measuring = "",
+   Callback = function(ws)
+      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = ws
+   end
+}
+
+
+
+local Tab = GUI:Tab{
+	Name = "Mags",
+	Icon = "rbxassetid://8569322835"
+}
+
+Tab:Button{
+	Name = "ExtremeBallMag",
+	Description = "tp ball to u",
+	Callback = function() end
+}local ballMagnet = script.Parent
 local magnetRange = 20
 
 local function isBall(part)
@@ -62,46 +125,3 @@ local function attractBall()
 end
 
 attractBall()
- end})
-
- section1:button({name = "button",callback = function()
-    print('hot ui lib')
- end})
-
-section1:slider({
-    name = "WalkSpeed",
-    def = 1,
-    max = 15,
-    min = 1,
-    rounding = true,
-    ticking = false,
-    measuring = "",
-    callback = function(ws)
-game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = ws
-    end
-})
-
-section1:dropdown({name = "dropdown",def = "",max = 10,options = {"1","2","3","4","5","6","7","8","9","10"},callback = function(chosen)
-   print(chosen)
-end})
-
-section1:buttonbox({name = "buttonbox",def = "",max = 4, options = {"yoyoyo","yo2","yo3","yo4"},callback = function(value)
-   print(value)
-end})
-
-
-section1:multibox({name = "multibox",def = {}, max = 4,options = {"1","2","3","4"},callback = function(value)
-   print(value)
-end})
-
-section1:textbox({name = "textbox",def = "default text",placeholder = "Enter WalkSpeed",callback = function(value)
-   print(value)
-end})
-
-section1:keybind({name = "set ui keybind",def = nil,callback = function(key)
-   window.key = key
-end})
-
-local picker = section1:colorpicker({name = "color",cpname = nil,def = Color3.fromRGB(255,255,255),callback = function(value)
-   color = value
-end})
